@@ -2,16 +2,16 @@ package http.server;
 
 import http.initializer.HttpServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
-@Slf4j
+@Log4j2
 public class HttpServer {
 
     private static final int PORT= 8888;
@@ -30,7 +30,9 @@ public class HttpServer {
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new HttpServerInitializer());
 
-            ChannelFuture channelFuture=b.bind(PORT).sync();
+            Channel ch=b.bind(PORT).sync().channel();
+            log.info("Netty http server listening on port "+ PORT);
+            ch.closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();
         }finally {
