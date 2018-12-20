@@ -3,11 +3,16 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
+
 sourceCompatibility = 1.8
 
 repositories {
+    maven{
+        url "http://maven.aliyun.com/nexus/content/groups/public/"
+    }
     mavenCentral()
 }
+
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
@@ -16,6 +21,8 @@ dependencies {
     implementation group: 'org.apache.logging.log4j',name:'log4j-api',version:'2.11.1'
     implementation group: 'org.apache.logging.log4j',name:'log4j-core',version:'2.11.1'
     implementation group: 'commons-codec',name:'commons-codec',version:'1.10'
-
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.7'
 
 }
+
+
