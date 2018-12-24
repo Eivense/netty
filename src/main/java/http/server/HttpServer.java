@@ -10,15 +10,10 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.ConfigurationFactory;
-import org.apache.logging.log4j.core.config.ConfigurationSource;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 
 @Log4j2
 public class HttpServer {
@@ -26,7 +21,12 @@ public class HttpServer {
     private static final int PORT= 8888;
 
     public static void main(String[] args) {
-        System.setProperty("log4j.configurationFile","log4j2.yaml");
+
+//        LoggerContext context= (LoggerContext) LogManager.getContext(false);
+//        File configFile=new File("E:\\Project\\Java\\Netty\\src\\main\\resources\\log4j2.yaml");
+//        context.setConfigLocation(configFile.toURI());
+//        context.reconfigure();
+
 
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();

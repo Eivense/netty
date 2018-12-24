@@ -3,13 +3,13 @@ Configuration:
 
   Appenders:
     Console:
-      name: Console
+      name: STDOUT
       target: SYSTEM_OUT
-        PatternLayout:
-          pattern: "%d{yyyy-MM-dd HH:mm:ss,SSS}:%4p %t (%F:%L) - %m%n"
+      PatternLayout:
+        Pattern: "%d{yyyy-MM-dd HH:mm:ss,SSS}:%4p %t (%F:%L) - %m%n"
 
   Loggers:
     Root:
       level: info
       AppenderRef:
-        - ref: Console
+        - ref: STDOUT
