@@ -8,7 +8,9 @@
   
 - HttpObjectAggregator: 负责将http聚合成完整的消息，而不是原始的多个部分
 
-- HttpContentCompressor和HttpContentDecompressor:HttpContentCompressor用于服务器压缩数据，HttpContentDecompressor用于客户端解压数据
+- HttpContentCompressor和HttpContentDecompressor
+  - HttpContentCompressor用于服务器压缩数据
+  - HttpContentDecompressor用于客户端解压数据
 
 - IdleStateHandler:连接空闲时间过长，触发IdleStateEvent事件
 
