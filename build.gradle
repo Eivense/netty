@@ -17,11 +17,19 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     implementation group: 'io.netty', name: 'netty-all', version: '4.1.28.Final'
+    implementation group: 'commons-codec',name:'commons-codec',version:'1.10'
+
+    //lombok依赖
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+
+    //log4j2依赖
     implementation group: 'org.apache.logging.log4j',name:'log4j-api',version:'2.11.1'
     implementation group: 'org.apache.logging.log4j',name:'log4j-core',version:'2.11.1'
-    implementation group: 'commons-codec',name:'commons-codec',version:'1.10'
+
+    //log4j2 yaml配置文件依赖
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.7'
+
 
 }
 

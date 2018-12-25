@@ -4,22 +4,38 @@ import http.handler.HttpServerHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
+import io.netty.handler.codec.http.*;
 
 public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel ch){
-        ChannelPipeline p=ch.pipeline();
+        ChannelPipeline pipeline=ch.pipeline();
+
+        /*
+         *或者使用HttpRequestDecoder & HttpResponseEncoder
+         * 对request解码 HttpRequestDecoder
+         * 对response编码 HttpResponseEncoder
+         */
+        pipeline.addLast("serverCodec",new HttpServerCodec());
+
+        //把多个消息转换成一个FullHttpRequest或者是FullHttpResponse
+        pipeline.addLast("aggregator",new HttpObjectAggregator(1024*1024));
 
 
-        //或者使用HttpRequestDecoder & HttpResponseEncoder
-        p.addLast(new HttpServerCodec());
+        //用于处理http 100-continue
+        pipeline.addLast(new HttpServerExpectContinueHandler());
 
-        //在处理POST消息体时需要加上
-        p.addLast(new HttpObjectAggregator(1024*1024));
-        p.addLast(new HttpServerExpectContinueHandler());
-        p.addLast(new HttpServerHandler());
+        /*
+         * 压缩
+         *
+         * 根据HttpRequest中的Accept-Encoding
+         * 对HttpMessage和HttpContent进行压缩
+         * 支持gzip和deflate
+         */
+        pipeline.addLast("compressor", new HttpContentCompressor());
+
+
+
+        pipeline.addLast("handler",new HttpServerHandler());
     }
 }
