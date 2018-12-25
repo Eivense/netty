@@ -18,15 +18,9 @@ import java.io.File;
 @Log4j2
 public class HttpServer {
 
-    private static final int PORT= 8888;
+    private static final int PORT= 8000;
 
     public static void main(String[] args) {
-
-//        LoggerContext context= (LoggerContext) LogManager.getContext(false);
-//        File configFile=new File("E:\\Project\\Java\\Netty\\src\\main\\resources\\log4j2.yaml");
-//        context.setConfigLocation(configFile.toURI());
-//        context.reconfigure();
-
 
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
