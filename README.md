@@ -2,6 +2,8 @@
 
 ## Netty中的ChannelHandler
 
+- SslHandler 负责对请求进行加密和解密，是放在ChannelPipeline中的第一个ChannelHandler
+
 - HttpClientCodec和HttpServerCodec
   - HttpServerCodec中整合了HttpResponseEncoder和HttpRequestDecoder
   - HttpClientCodec中整合了HttpRequestEncoder和HttpResponseDecoder
