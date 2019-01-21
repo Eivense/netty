@@ -6,11 +6,12 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.util.AsciiString;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Map.Entry;
-import lombok.extern.log4j.Log4j2;
 
 
-@Log4j2
+@Slf4j
 public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
 
 
