@@ -10,16 +10,18 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @Slf4j
-@SpringBootApplication
 public class HttpServer {
 
-    private static final int PORT= 8000;
+    private int port;
 
-    private static void start(){
+
+    public HttpServer(int port) {
+        this.port=port;
+    }
+
+    public void start(){
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -34,20 +36,23 @@ public class HttpServer {
                     .childHandler(new HttpServerInitializer());
 
 
-            Channel ch=b.bind(PORT).sync().channel();
-            log.info("Netty http server listening on port "+ PORT);
+            Channel ch=b.bind(port).sync().channel();
+            log.info("Netty http server listening on port "+ port);
             ch.closeFuture().sync();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
     }
 
+
     public static void main(String[] args) {
-        SpringApplication.run(HttpServer.class, args);
+        HttpServer httpServer=new HttpServer(8000);
+        httpServer.start();
     }
+
 
 
 }

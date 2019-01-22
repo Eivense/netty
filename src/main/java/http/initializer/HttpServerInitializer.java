@@ -23,7 +23,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
 
         //用于处理http 100-continue
-        pipeline.addLast(new HttpServerExpectContinueHandler());
+        pipeline.addLast("100-continue",new HttpServerExpectContinueHandler());
 
         /*
          * 压缩
