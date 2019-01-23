@@ -1,6 +1,6 @@
-package http.server;
+package server;
 
-import http.initializer.HttpServerInitializer;
+import initializer.HttpProxyServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -33,7 +33,7 @@ public class HttpServer {
                     .childOption(ChannelOption.SO_KEEPALIVE,true)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new HttpServerInitializer());
+                    .childHandler(new HttpProxyServerInitializer());
 
 
             Channel ch=b.bind(port).sync().channel();

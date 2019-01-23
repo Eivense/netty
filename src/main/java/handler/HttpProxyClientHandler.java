@@ -1,9 +1,8 @@
-package http.handler;
+package handler;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.codec.http.FullHttpResponse;
 
 public class HttpProxyClientHandler extends ChannelInboundHandlerAdapter {
 
@@ -16,10 +15,11 @@ public class HttpProxyClientHandler extends ChannelInboundHandlerAdapter {
 
   @Override
   public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-    FullHttpResponse response= (FullHttpResponse) msg;
-    response.headers().add("test","from proxy");
-    clientChannel.writeAndFlush(msg);
+    clientChannel.write(msg);
   }
 
-
+  @Override
+  public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+    clientChannel.flush();
+  }
 }
