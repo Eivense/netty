@@ -18,8 +18,8 @@ public class HttpProxyServerInitializer extends ChannelInitializer<SocketChannel
          */
         pipeline.addLast("serverCodec",new HttpServerCodec());
 
-//        //把多个消息转换成一个FullHttpRequest或者是FullHttpResponse
-////        pipeline.addLast("aggregator",new HttpObjectAggregator(1024*1024));
+        //把多个消息转换成一个FullHttpRequest或者是FullHttpResponse
+        pipeline.addLast("aggregator",new HttpObjectAggregator(1024*1024));
 ////
 ////
 ////        //用于处理http 100-continue

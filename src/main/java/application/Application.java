@@ -1,21 +1,16 @@
 package application;
 
-import server.HttpServer;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-public class Application implements CommandLineRunner {
+@ComponentScan({"server"})
+public class Application {
 
   public static void main(String[] args) {
     SpringApplication.run(Application.class, args);
 
   }
 
-  @Override
-  public void run(String... args) throws Exception {
-    HttpServer server=new HttpServer(8000);
-    server.start();
-  }
 }
