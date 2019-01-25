@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 @Service("proxyServer")
 @Slf4j
-public class HttpServer {
+public class HttpProxyServer {
 
 
     public void init(){

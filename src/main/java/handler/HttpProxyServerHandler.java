@@ -2,6 +2,7 @@ package handler;
 
 import initializer.HttpProxyClientInitializer;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -12,12 +13,18 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.concurrent.FutureListener;
 import io.netty.util.concurrent.Promise;
+import java.net.InetSocketAddress;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -25,9 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 public class HttpProxyServerHandler extends ChannelInboundHandlerAdapter {
 
 
-    private HttpRequest httpRequest;
-
-    private String host;
     //默认端口为80
     private int port=80;
 
@@ -44,7 +48,7 @@ public class HttpProxyServerHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if(msg instanceof HttpRequest){
 
-            httpRequest= (HttpRequest) msg;
+            HttpRequest httpRequest = (HttpRequest) msg;
 
             log.info(httpRequest.uri());
 
@@ -53,33 +57,37 @@ public class HttpProxyServerHandler extends ChannelInboundHandlerAdapter {
 
             //可能有请求是 host:port的情况，
             String[] split = headerHost.split(":");
-            host = split[0];
+            String host = split[0];
             if (split.length > 1) {
                 port = Integer.valueOf(split[1]);
             }
 
-            Promise<Channel> promise = createPromise(ctx, host, port);
+            //
+            Promise<Channel> promise = createPromise(ctx,msg, host,port);
 
             //HTTPS建立代理握手
             if (httpRequest.method().equals(HttpMethod.CONNECT)) {
 
+                //服务器连接建立完成之后
                 promise.addListener((FutureListener<Channel>) future -> {
                     //首先向浏览器发送一个200的响应
                     FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,SUCCESS);
-                    //向浏览器发送同意连接的响应，并在发送完成后移除handler
 
-                    ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> {
-                        ChannelPipeline p = ctx.pipeline();
-                        p.remove("serverCodec");
-                        p.remove("aggregator");
-                        p.remove("httpProxyServerHandler");
-                    });
-                    ChannelPipeline p = ctx.pipeline();
+                    ctx.writeAndFlush(response);
 
-                    p.addLast(new HttpProxyClientHandler(future.getNow()));
+                    ctx.pipeline().remove("serverCodec");
+                    ctx.pipeline().remove("aggregator");
+
                 });
-            }else{
-                //TODO
+            }
+        }else if(msg instanceof HttpContent){
+            //ignore
+        } else{
+            ByteBuf byteBuf= (ByteBuf) msg;
+            if(byteBuf.getByte(0)==22){
+                int port = ((InetSocketAddress) ctx.channel().localAddress()).getPort();
+                SslContext sslCtx = SslContextBuilder
+                    .forServer().build();
             }
         }
     }
@@ -87,7 +95,7 @@ public class HttpProxyServerHandler extends ChannelInboundHandlerAdapter {
 
 
     //根据host和端口，创建一个连接web的连接
-    private Promise<Channel> createPromise(ChannelHandlerContext ctx,String host,int port) {
+    private Promise<Channel> createPromise(ChannelHandlerContext ctx,Object msg,String host,int port) {
         Promise<Channel> promise=ctx.executor().newPromise();
         Bootstrap bootstrap=new Bootstrap();
         bootstrap.group(ctx.channel().eventLoop())
@@ -101,6 +109,7 @@ public class HttpProxyServerHandler extends ChannelInboundHandlerAdapter {
         channelFuture.addListener((ChannelFutureListener) future -> {
                 if (future.isSuccess()) {
                     promise.setSuccess(future.channel());
+                    future.channel().writeAndFlush(msg);
                 } else {
                     future.channel().close();
                 }

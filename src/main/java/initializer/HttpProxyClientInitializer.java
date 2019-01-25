@@ -1,19 +1,15 @@
 package initializer;
 
-import certificate.CrtUtil;
 import handler.HttpProxyClientHandler;
-import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpClientCodec;
-import io.netty.handler.proxy.ProxyHandler;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import javax.net.ssl.SSLEngine;
 
 
 /**
@@ -38,9 +34,14 @@ public class HttpProxyClientInitializer extends ChannelInitializer<SocketChannel
 
     SslContext sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE)
         .build();
-//    pipeline.addLast("ssl", sslCtx.newHandler(ch.alloc(), host, port));
-//
-//    pipeline.addLast("clientCodec",new HttpClientCodec());
+
+    pipeline.addLast("ssl", sslCtx.newHandler(ch.alloc(), host, port));
+
+    pipeline.addLast("clientCodec",new HttpClientCodec());
+
+    //把多个消息转换成一个FullHttpRequest或者是FullHttpResponse
+    pipeline.addLast("aggregator",new HttpObjectAggregator(1024*1024));
+
     pipeline.addLast(new HttpProxyClientHandler(clientChannel));
   }
 }
