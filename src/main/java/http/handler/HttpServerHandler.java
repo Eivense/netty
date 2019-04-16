@@ -52,7 +52,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
                     }
                 }
             }else if(method.equals(HttpMethod.POST)){
-                //POST请求,由于你需要从消息体中获取数据,因此有必要把msg转换成FullHttpRequest
+                //POST请求
                 fullHttpRequest= (FullHttpRequest) msg;
 
             }
